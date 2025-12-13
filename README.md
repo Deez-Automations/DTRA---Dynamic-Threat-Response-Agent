@@ -4,8 +4,6 @@
 
 DTRA (Dynamic Threat Response Agent) is an advanced cybersecurity monitoring system that uses **Hybrid AI** (Deep Learning + Random Forest) and **Reinforcement Learning** (Q-Learning) to detect, classify, and respond to network attacks in real-time.
 
-![DTRA Dashboard](https://via.placeholder.com/1200x600.png?text=DTRA+SOC+Dashboard+Preview)
-*(Replace this with a real screenshot of soc_dashboard.html)*
 
 ## 🚀 Key Features
 
