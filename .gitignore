@@ -1,0 +1,16 @@
+# Python essentials
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Data & Large Files (GitHub limit 100MB)
+CICIDS2017/
+COMBINED_CICIDS2017.csv
+uploads/
+training_checkpoints/
+
+# OS generated
+.DS_Store
+Thumbs.db

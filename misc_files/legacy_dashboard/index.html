@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTRA | Enterprise Sentinel</title>
+    <meta name="description" content="Dynamic Threat Response Agent - AI-Powered Cybersecurity Dashboard">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Chart.js for Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Three.js Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Scan Lines Effect -->
+    <div class="scanlines"></div>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 60 60" class="shield-logo">
+                        <defs>
+                            <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0080ff;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M30 5 L55 15 L55 35 C55 48 30 55 30 55 C30 55 5 48 5 35 L5 15 Z" fill="none"
+                            stroke="url(#shieldGrad)" stroke-width="2" />
+                        <circle cx="30" cy="30" r="10" fill="none" stroke="url(#shieldGrad)" stroke-width="1.5" />
+                        <circle cx="30" cy="30" r="4" fill="url(#shieldGrad)" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>DTRA</h1>
+                    <span class="subtitle">ENTERPRISE SENTINEL</span>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-dot online"></span>
+                    <span class="status-label">SYSTEM STATUS</span>
+                    <span class="status-value" id="system-status">ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">AI CORE</span>
+                    <span class="status-value" id="ai-status">STANDBY</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">DEFENSE MODE</span>
+                    <span class="status-value defense-mode" id="defense-mode">PASSIVE</span>
+                </div>
+            </div>
+
+            <div class="time-display">
+                <div class="time" id="current-time">00:00:00</div>
+                <div class="date" id="current-date">2024-01-01</div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Left Panel - Input & Control -->
+            <section class="panel panel-left">
+                <div class="panel-header">
+                    <div class="panel-icon">⚡</div>
+                    <h2>THREAT INGESTION</h2>
+                </div>
+
+                <!-- File Upload Zone -->
+                <div class="upload-zone" id="upload-zone">
+                    <div class="upload-animation">
+                        <div class="upload-rings">
+                            <div class="ring ring-1"></div>
+                            <div class="ring ring-2"></div>
+                            <div class="ring ring-3"></div>
+                        </div>
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17,8 12,3 7,8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="upload-text">DROP NETWORK TRAFFIC CSV</p>
+                    <p class="upload-subtext">or click to browse</p>
+                    <input type="file" id="file-input" accept=".csv" hidden>
+                </div>
+
+                <!-- Processing Animation -->
+                <div class="processing-section" id="processing-section">
+                    <div class="neural-network">
+                        <div class="nn-layer input-layer">
+                            <div class="neuron" data-delay="0"></div>
+                            <div class="neuron" data-delay="1"></div>
+                            <div class="neuron" data-delay="2"></div>
+                            <div class="neuron" data-delay="3"></div>
+                        </div>
+                        <div class="nn-connections"></div>
+                        <div class="nn-layer hidden-layer">
+                            <div class="neuron" data-delay="4"></div>
+                            <div class="neuron" data-delay="5"></div>
+                            <div class="neuron" data-delay="6"></div>
+                        </div>
+                        <div class="nn-connections"></div>
+                        <div class="nn-layer output-layer">
+                            <div class="neuron output-neuron" data-delay="7"></div>
+                        </div>
+                    </div>
+                    <div class="processing-status">
+                        <span id="processing-text">INITIALIZING NEURAL NETWORK...</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danger Gauge -->
+                <div class="danger-gauge-container" id="gauge-container">
+                    <div class="gauge-header">AVERAGE THREAT LEVEL</div>
+                    <div class="danger-gauge">
+                        <svg viewBox="0 0 200 120" class="gauge-svg">
+                            <defs>
+                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#00ff88" />
+                                    <stop offset="50%" style="stop-color:#ffaa00" />
+                                    <stop offset="100%" style="stop-color:#ff0044" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Background Arc -->
+                            <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1a2a3a" stroke-width="12"
+                                stroke-linecap="round" />
+                            <!-- Value Arc -->
+                            <path id="gauge-value" d="M 20 100 A 80 80 0 0 1 180 100" fill="none"
+                                stroke="url(#gaugeGradient)" stroke-width="12" stroke-linecap="round"
+                                stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                            <!-- Needle -->
+                            <g id="gauge-needle" transform="rotate(-90, 100, 100)">
+                                <line x1="100" y1="100" x2="100" y2="30" stroke="#00f0ff" stroke-width="3"
+                                    stroke-linecap="round" />
+                                <circle cx="100" cy="100" r="8" fill="#00f0ff" />
+                            </g>
+                        </svg>
+                        <div class="gauge-value" id="gauge-percent">0%</div>
+                        <div class="gauge-label" id="gauge-label">SAFE</div>
+                    </div>
+                </div>
+
+                <!-- Activate Button -->
+                <button class="activate-btn" id="activate-btn" disabled>
+                    <span class="btn-text">ACTIVATE DEFENSE MATRIX</span>
+                    <div class="btn-glow"></div>
+                </button>
+            </section>
+
+            <!-- Center Panel - Metrics & Visualization -->
+            <section class="panel panel-center">
+
+                <!-- Top Metrics Row -->
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <div class="metric-icon packets-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                                <path d="M16 3H8l-2 4h12z" />
+                            </svg>
+                        </div>
+                        <div class="metric-value" id="packets-count">0</div>
+                        <div class="metric-label">PACKETS ANALYZED</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon threat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                                <line x1="12" y1="9" x2="12" y2="13" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                        </div>
+                        <div class="metric-value" id="threats-count">0</div>
+                        <div class="metric-label">THREATS DETECTED</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon blocked-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                            </svg>
+                        </div>
+                        <div class="metric-value" id="blocked-count">0</div>
+                        <div class="metric-label">THREATS BLOCKED</div>
+                    </div>
+
+                    <div class="metric-card accuracy-card">
+                        <div class="metric-icon accuracy-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                        </div>
+                        <div class="metric-value" id="accuracy-value">--%</div>
+                        <div class="metric-label">ACCURACY</div>
+                    </div>
+                </div>
+
+                <!-- Classification Metrics -->
+                <div class="classification-section">
+                    <div class="chart-header">
+                        <h3>CLASSIFICATION METRICS</h3>
+                    </div>
+                    <div class="classification-grid">
+                        <div class="class-metric">
+                            <div class="class-label">PRECISION</div>
+                            <div class="class-value" id="precision-value">--</div>
+                            <div class="class-bar">
+                                <div class="class-fill precision-fill" id="precision-bar"></div>
+                            </div>
+                        </div>
+                        <div class="class-metric">
+                            <div class="class-label">RECALL</div>
+                            <div class="class-value" id="recall-value">--</div>
+                            <div class="class-bar">
+                                <div class="class-fill recall-fill" id="recall-bar"></div>
+                            </div>
+                        </div>
+                        <div class="class-metric">
+                            <div class="class-label">F1 SCORE</div>
+                            <div class="class-value" id="f1-value">--</div>
+                            <div class="class-bar">
+                                <div class="class-fill f1-fill" id="f1-bar"></div>
+                            </div>
+                        </div>
+                        <div class="class-metric">
+                            <div class="class-label">DETECTION RATE</div>
+                            <div class="class-value" id="detection-rate-value">--</div>
+                            <div class="class-bar">
+                                <div class="class-fill detection-fill" id="detection-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confusion Matrix & Action Distribution -->
+                <div class="analysis-row">
+                    <!-- Confusion Matrix -->
+                    <div class="confusion-matrix-container">
+                        <div class="chart-header">
+                            <h3>CONFUSION MATRIX</h3>
+                        </div>
+                        <div class="confusion-matrix">
+                            <div class="cm-labels-top">
+                                <span></span>
+                                <span>Pred. Benign</span>
+                                <span>Pred. Attack</span>
+                            </div>
+                            <div class="cm-row">
+                                <span class="cm-label">Actual Benign</span>
+                                <div class="cm-cell tn" id="cm-tn">
+                                    <span class="cm-value">0</span>
+                                    <span class="cm-name">TN</span>
+                                </div>
+                                <div class="cm-cell fp" id="cm-fp">
+                                    <span class="cm-value">0</span>
+                                    <span class="cm-name">FP</span>
+                                </div>
+                            </div>
+                            <div class="cm-row">
+                                <span class="cm-label">Actual Attack</span>
+                                <div class="cm-cell fn" id="cm-fn">
+                                    <span class="cm-value">0</span>
+                                    <span class="cm-name">FN</span>
+                                </div>
+                                <div class="cm-cell tp" id="cm-tp">
+                                    <span class="cm-value">0</span>
+                                    <span class="cm-name">TP</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Distribution -->
+                    <div class="action-distribution">
+                        <div class="chart-header">
+                            <h3>AI RESPONSE DISTRIBUTION</h3>
+                        </div>
+                        <div class="action-bars">
+                            <div class="action-item">
+                                <span class="action-label">IGNORE</span>
+                                <div class="action-bar-container">
+                                    <div class="action-bar ignore-bar" id="ignore-bar"></div>
+                                </div>
+                                <span class="action-value" id="ignore-count">0</span>
+                            </div>
+                            <div class="action-item">
+                                <span class="action-label">LOG</span>
+                                <div class="action-bar-container">
+                                    <div class="action-bar log-bar" id="log-bar"></div>
+                                </div>
+                                <span class="action-value" id="log-count">0</span>
+                            </div>
+                            <div class="action-item">
+                                <span class="action-label">BLOCK</span>
+                                <div class="action-bar-container">
+                                    <div class="action-bar block-bar" id="block-bar"></div>
+                                </div>
+                                <span class="action-value" id="block-count">0</span>
+                            </div>
+                            <div class="action-item">
+                                <span class="action-label">ISOLATE</span>
+                                <div class="action-bar-container">
+                                    <div class="action-bar isolate-bar" id="isolate-bar"></div>
+                                </div>
+                                <span class="action-value" id="isolate-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel - SOC Console -->
+            <section class="panel panel-right">
+                <div class="panel-header">
+                    <div class="panel-icon">💻</div>
+                    <h2>SOC ANALYST CONSOLE</h2>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        LIVE
+                    </div>
+                </div>
+
+                <!-- SOC Terminal Console -->
+                <div class="soc-console" id="soc-console">
+                    <div class="console-output" id="console-output">
+                        <div class="console-line system">
+                            <span class="console-prefix">[SYSTEM]</span>
+                            <span class="console-text">DTRA Enterprise Sentinel v2.0</span>
+                        </div>
+                        <div class="console-line system">
+                            <span class="console-prefix">[SYSTEM]</span>
+                            <span class="console-text">SOC Analyst Console Ready</span>
+                        </div>
+                        <div class="console-line info">
+                            <span class="console-prefix">[INFO]</span>
+                            <span class="console-text">Awaiting data stream...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Stats -->
+                <div class="summary-stats" id="summary-stats">
+                    <div class="stat-row">
+                        <div class="stat-item">
+                            <span class="stat-label">FALSE ALARM RATE</span>
+                            <span class="stat-value" id="false-alarm-rate">--%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">PROCESSING TIME</span>
+                            <span class="stat-value" id="processing-time">--s</span>
+                        </div>
+                    </div>
+                    <div class="stat-row">
+                        <div class="stat-item benign-stat">
+                            <span class="stat-label">BENIGN AVG SCORE</span>
+                            <span class="stat-value" id="benign-avg">--</span>
+                        </div>
+                        <div class="stat-item attack-stat">
+                            <span class="stat-label">ATTACK AVG SCORE</span>
+                            <span class="stat-value" id="attack-avg">--</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-left">
+                <span class="version">v2.0.0</span>
+                <span class="separator">|</span>
+                <span>DTRA Enterprise</span>
+            </div>
+            <div class="footer-center">
+                <span id="packets-per-sec">0 pkt/s</span>
+            </div>
+            <div class="footer-right">
+                <span>Neural Network: <span id="nn-status">Ready</span></span>
+                <span class="separator">|</span>
+                <span>RL Agent: <span id="rl-status">Trained</span></span>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
