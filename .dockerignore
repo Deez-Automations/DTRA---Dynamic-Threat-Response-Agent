@@ -1,0 +1,20 @@
+# Ignore everything by default to keep image small
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+.venv
+venv
+env
+
+# Large data files (not needed for container)
+CICIDS2017/
+COMBINED_CICIDS2017.csv
+uploads/
+
+# Development files
+misc_files/
+*.mov
+*.exe
+*.docx
